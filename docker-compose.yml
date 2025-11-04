@@ -1,0 +1,40 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lemi-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - /app/venv
+    environment:
+      - PYTHONUNBUFFERED=1
+      # No DATABASE_URL = uses SQLite locally
+    networks:
+      - lemi-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./web-frontend
+      dockerfile: Dockerfile
+    container_name: lemi-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./web-frontend:/app
+      - /app/node_modules
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
+    networks:
+      - lemi-network
+    restart: unless-stopped
+
+networks:
+  lemi-network:
+    driver: bridge

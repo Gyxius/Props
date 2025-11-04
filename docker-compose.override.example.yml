@@ -1,0 +1,6 @@
+services:
+  frontend:
+    environment:
+      # Replace with your backend tunnel URL (Cloudflare/ngrok)
+      # Example: https://lemi-backend-1234.ngrok.app
+      - REACT_APP_API_URL=BACKEND_PUBLIC_URL
