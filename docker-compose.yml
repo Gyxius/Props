@@ -12,6 +12,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       # No DATABASE_URL = uses SQLite locally
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     networks:
       - lemi-network
     restart: unless-stopped
