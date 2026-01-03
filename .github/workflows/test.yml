@@ -1,0 +1,75 @@
+name: Backend Tests
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/test.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+
+jobs:
+  test-event-creation:
+    name: Test Event Creation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run Event Creation Tests (Deployed)
+        run: |
+          cd backend
+          python3 test_event_creation.py --deployed
+      
+      - name: Test Results Summary
+        if: always()
+        run: |
+          echo "Event Creation Tests Complete"
+  
+  test-follow-system:
+    name: Test Follow System
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run Follow System Tests
+        run: |
+          cd backend
+          python3 test_follow_system.py
+      
+      - name: Test Results Summary
+        if: always()
+        run: |
+          echo "Follow System Tests Complete"
