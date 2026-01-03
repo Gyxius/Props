@@ -103,3 +103,90 @@ jobs:
         if: always()
         run: |
           echo "Follow System Tests Complete"
+  
+  test-event-features:
+    name: Test Event Features
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Update submodules
+        run: |
+          git submodule update --init --recursive
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          cd backend
+          echo "=== Installing Python dependencies ==="
+          pip install --upgrade pip
+          echo "=== Installing requests library ==="
+          pip install requests
+          echo "=== Dependencies installed successfully ==="
+      
+      - name: Run Event Features Tests (Deployed)
+        run: |
+          cd backend
+          echo "=== Starting Comprehensive Event Features Tests ==="
+          python3 test_event_features.py --deployed 2>&1 | tee test_features_output.log
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "=== Test exit code: $EXIT_CODE ==="
+          exit $EXIT_CODE
+      
+      - name: Test Results Summary
+        if: always()
+        run: |
+          echo "Event Features Tests Complete"
+  
+  test-authentication:
+    name: Test Authentication System
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Update submodules
+        run: |
+          git submodule update --init --recursive
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          cd backend
+          echo "=== Installing Python dependencies ==="
+          pip install --upgrade pip
+          echo "=== Installing requests library ==="
+          pip install requests
+          echo "=== Dependencies installed successfully ==="
+      
+      - name: Run Authentication Tests (Deployed)
+        run: |
+          cd backend
+          echo "=== Starting Authentication System Tests ==="
+          python3 test_auth.py --deployed 2>&1 | tee test_auth_output.log
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "=== Test exit code: $EXIT_CODE ==="
+          exit $EXIT_CODE
+      
+      - name: Test Results Summary
+        if: always()
+        run: |
+          echo "Authentication Tests Complete"
+
