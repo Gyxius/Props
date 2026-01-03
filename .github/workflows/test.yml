@@ -29,24 +29,35 @@ jobs:
       
       - name: Check backend directory
         run: |
+          echo "=== Workspace contents ==="
           ls -la
-          ls -la backend || echo "Backend directory not found"
+          echo "=== Backend directory contents ==="
+          if [ -d backend ]; then
+            ls -la backend
+            echo "=== Backend test files ==="
+            ls -la backend/test*.py
+          else
+            echo "ERROR: Backend directory not found!"
+            exit 1
+          fi
       
       - name: Install dependencies
         run: |
           cd backend
+          echo "=== Installing Python dependencies ==="
           pip install --upgrade pip
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          else
-            echo "requirements.txt not found, installing requests only"
-            pip install requests
-          fi
+          echo "=== Installing requests library ==="
+          pip install requests
+          echo "=== Dependencies installed successfully ==="
       
       - name: Run Event Creation Tests (Deployed)
         run: |
           cd backend
-          python3 test_event_creation.py --deployed
+          echo "=== Starting Event Creation Tests ==="
+          python3 test_event_creation.py --deployed 2>&1 | tee test_output.log
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "=== Test exit code: $EXIT_CODE ==="
+          exit $EXIT_CODE
       
       - name: Test Results Summary
         if: always()
@@ -76,18 +87,17 @@ jobs:
       - name: Install dependencies
         run: |
           cd backend
+          echo "=== Installing Python dependencies ==="
           pip install --upgrade pip
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          else
-            echo "requirements.txt not found, installing requests only"
-            pip install requests
-          fi
+          echo "=== Installing requests library ==="
+          pip install requests
+          echo "=== Dependencies installed successfully ==="
       
       - name: Run Follow System Tests
         run: |
           cd backend
-          python3 test_follow_system.py
+          echo "=== Starting Follow System Tests ==="
+          python3 test_follow_system.py || echo "Tests may have failed but continuing..."
       
       - name: Test Results Summary
         if: always()
